@@ -7,7 +7,8 @@ class Player:
     This class is the main class that defines a player and tracks their
     progress.
     """
-    # Player Constants Go Here
+    # Player Constants Go Here #
+    ############################
     # Note about alignments: -1 = unlawful/evil, 0 = neutral, 1 = lawful/good
     name = ""  # actual name of player
     playerName = ""  # name of character in game
@@ -21,8 +22,19 @@ class Player:
     playerFlaws = ""
     playerBackground = ""
 
-    # Player Variables Go Here
+    # Player Variables Go After Here #
+    ##################################
+
     attributes = {
+        "STR": 0,
+        "DEX": 0,
+        "CON": 0,
+        "INT": 0,
+        "WIS": 0,
+        "CHA": 0,
+    }
+
+    attributeModifiers = {
         "STR": 0,
         "DEX": 0,
         "CON": 0,
@@ -97,13 +109,25 @@ class Player:
         relevant information"""
 
         playerResponse = "y"  # this character tracks the user's input.
+        o = PlayerInterface()
+        o.out("Halt! Who goes there ... ?")
+        o.out("Identify yourself!")
+        playerResponse = o.read("Enter your character's name : ")
 
 
-class interface:
+class PlayerInterface:
     """This class serves as an interface between the player and the program."""
 
-    def print(self, message):
+    def out(self, message):
         print(message)
+
+    def read(self, message):
+        """Prompts the user for input with the given message and returns
+         their input.
+         :return: the user's input as string.
+         """
+        userResponse = input(message + ": ")
+        return userResponse
 
 
 class Item:
@@ -206,5 +230,8 @@ class InvalidArgument(Exception):
 
 
 # test code
-itemManifest = Item.loadItemManifest("ItemList")
-print(itemManifest)
+# itemManifest = Item.loadItemManifest("ItemList")
+# print(itemManifest)
+
+player = Player()
+player.initializePlayer()
