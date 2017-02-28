@@ -107,12 +107,12 @@ class Player:
     def initializePlayer(self):
         """This method initializes the player from scratch and loads all
         relevant information"""
-
+        affirmative = ["yes", "y"]
         playerResponse = "y"  # this character tracks the user's input.
         o = PlayerInterface()
-        o.out("Halt! Who goes there ... ?")
-        o.out("Identify yourself!")
-        playerResponse = o.read("Enter your character's name : ")
+        o.out("Halt! Who goes there ... ? Identify yourself!")
+        playerResponse = o.read("What is your name? Enter name: ")
+        playerResponse = o.read("%s you said, did I hear that right? (y/n) ")
 
 
 class PlayerInterface:
@@ -122,11 +122,23 @@ class PlayerInterface:
         print(message)
 
     def read(self, message):
-        """Prompts the user for input with the given message and returns
-         their input.
-         :return: the user's input as string.
-         """
-        userResponse = input(message + ": ")
+        """
+        Prompts the user for input with the given message and returns the
+        string as lowercase.
+        :param message: prompt message.
+        :return: Player input as lowercase.
+        """
+        userResponse = input(message)
+        return userResponse.lower()
+
+    def readRaw(self, message):
+        """
+        Prompts the user for input with the given message and returns the
+        string as-is.
+        :param message: prompt message.
+        :return: Player input.
+        """
+        userResponse = input(message)
         return userResponse
 
 
