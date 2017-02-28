@@ -1,4 +1,5 @@
 Task Queue - Immediate order of tasks.
+    --> First time interface. -- kaus
     --> Implement a basic player class.
         > Load/Save
         >
@@ -17,12 +18,16 @@ Bugs - Knows bugs to fix.
 
 Features - List of Features to add.
     --> Dictionaries of the races, etc, as constants.
+        > list of backgrounds
+        > list of spells (scrape)
+        >
+
     --> Race and Class - based attribute system and database.
     --> Inventory database.
     --> Save/Load 
 
 Ideas - Features that COULD be added.
-    -->
+    --> Status effects
     -->
     -->
 

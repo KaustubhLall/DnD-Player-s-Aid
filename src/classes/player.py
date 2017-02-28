@@ -3,6 +3,10 @@ itemManifest = {}
 
 
 class Player:
+    """
+    This class is the main class that defines a player and tracks their
+    progress.
+    """
     # Player Constants Go Here
     # Note about alignments: -1 = unlawful/evil, 0 = neutral, 1 = lawful/good
     name = ""  # actual name of player
@@ -12,12 +16,57 @@ class Player:
     playerClass = ""
     # these will be implemented later TODO
     personalityTraits = ""
-    bonds = ""
-    ideals = ""
-    flaws = ""
+    playerBonds = ""
+    playerIdeals = ""
+    playerFlaws = ""
+    playerBackground = ""
 
     # Player Variables Go Here
+    attributes = {
+        "STR": 0,
+        "DEX": 0,
+        "CON": 0,
+        "INT": 0,
+        "WIS": 0,
+        "CHA": 0,
+    }
 
+    # Player proficiencies and expertise.
+    # Dict format: "skill": (parentStat, isProficient, isExpert)
+    # Note: All skills are lowercase
+    skills = {
+        "athletics"      : ("STR", False, False),
+        "acrobatics"     : ("DEX", False, False),
+        "sleight of hand": ("DEX", False, False),
+        "stealth"        : ("DEX", False, False),
+        "animal handling": ("WIS", False, False),
+        "insight"        : ("WIS", False, False),
+        "medicine"       : ("WIS", False, False),
+        "perception"     : ("WIS", False, False),
+        "survival"       : ("WIS", False, False),
+        "arcana"         : ("INT", False, False),
+        "history"        : ("INT", False, False),
+        "investigation"  : ("INT", False, False),
+        "nature"         : ("INT", False, False),
+        "religion"       : ("INT", False, False),
+        "deception"      : ("CHA", False, False),
+        "intimidation"   : ("CHA", False, False),
+        "performance"    : ("CHA", False, False),
+        "persuasion"     : ("CHA", False, False),
+    }
+
+    playerInspiration = False
+    playerAC = 0
+    playerInitiative = 0
+    playerSpeed = 0
+    playerPassivePerception = 0
+    playerHP = 0
+    playerMaxHP = 0
+    playerTempHP = 0
+    playerHitDieType = 0
+    playerHitDieTotal = 0
+    playerHitDieRemaining = 0
+    playerUnconscious = False
 
     # setter/getter methods for constants
     def setActualPlayerName(self, name):
