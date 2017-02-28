@@ -108,11 +108,25 @@ class Player:
         """This method initializes the player from scratch and loads all
         relevant information"""
         affirmative = ["yes", "y"]
-        playerResponse = "y"  # this character tracks the user's input.
+        affirmation = "y"  # this character tracks the user's input.
+        response = ""
+
         o = PlayerInterface()
         o.out("Halt! Who goes there ... ? Identify yourself!")
-        playerResponse = o.read("What is your name? Enter name: ")
-        playerResponse = o.read("%s you said, did I hear that right? (y/n) ")
+        response = o.readRaw("I said, identify yourself! Enter name: ")
+        affirmation = o.read("%s you said, did I hear that right? (y/n) "
+                             % response)
+
+        while affirmation not in affirmative:
+            response = o.read(
+                "No? What is it then. Out with it! Enter name: ")
+            affirmation = o.read("%s, did I hear you right this time? ("
+                                 "y/n)" % response)
+
+        o.out("Well, I must say, it's a pleasure to make your acquaintance.")
+        o.out("Who am I, you ask? Well. Nobody really knows who I am. If you "
+              "must know, I have been hired to aid the young adventurer who "
+              "goes by the name of %s.")
 
 
 class PlayerInterface:
@@ -129,6 +143,10 @@ class PlayerInterface:
         :return: Player input as lowercase.
         """
         userResponse = input(message)
+
+        if len(userResponse) == 0:
+            userResponse = input(message)
+
         return userResponse.lower()
 
     def readRaw(self, message):
@@ -139,6 +157,8 @@ class PlayerInterface:
         :return: Player input.
         """
         userResponse = input(message)
+        if len(userResponse) == 0:
+            userResponse = input(message)
         return userResponse
 
 
