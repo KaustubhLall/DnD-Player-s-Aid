@@ -1,11 +1,17 @@
 Task Queue - Immediate order of tasks.
     --> Implement a basic player class.
+        > Load/Save
+        >
+
+
     --> Itemlist parser, inventory class
+        > Add weapon subclass
+
     --> Unearthed arcana races
 
 
 Bugs - Knows bugs to fix.
-    -->
+    --> additional item info not correctly parsed for _ char
     -->
     -->
 
@@ -13,7 +19,7 @@ Features - List of Features to add.
     --> Dictionaries of the races, etc, as constants.
     --> Race and Class - based attribute system and database.
     --> Inventory database.
-    -->
+    --> Save/Load 
 
 Ideas - Features that COULD be added.
     -->
@@ -27,6 +33,9 @@ Interface States and Keywords:
         > buy/b
             Makes a confirmation dialog which shows the item.
 
+		> inventort/inven/i 
+			Pulls up the players inventory
+			
         > combat/c
             Enters combat mode
 

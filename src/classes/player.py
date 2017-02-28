@@ -3,7 +3,6 @@ itemManifest = {}
 
 
 class Player:
-    pass
     # Player Constants Go Here
     # Note about alignments: -1 = unlawful/evil, 0 = neutral, 1 = lawful/good
     name = ""  # actual name of player
@@ -16,6 +15,9 @@ class Player:
     bonds = ""
     ideals = ""
     flaws = ""
+
+    # Player Variables Go Here
+
 
     # setter/getter methods for constants
     def setActualPlayerName(self, name):
