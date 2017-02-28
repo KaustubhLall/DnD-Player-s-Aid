@@ -121,7 +121,7 @@ class Player:
         while affirmation not in affirmative:
             response = o.read(
                 "No? What is it then. Out with it! Enter name: ")
-            affirmation = o.read("%s, did I hear you right this time? ("
+            affirmation = o.readRaw("%s, did I hear you right this time? ("
                                  "y/n)" % response)
         self.setCharacterName(response)
         response = ""
@@ -134,7 +134,7 @@ class Player:
         o.out("In order to help you, I must pick up a few things about you. "
               "Im afraid i wasn't briefed all that well.")
         response = o.read("In this day and age, it isn't proper to assume "
-                          "one's race, now is it. So tell me, what race is it "
+                          "one's race, now is it? So tell me, what race is it "
                           "that you identify with? Enter race: ")
         response = str(response).capitalize()
         while response not in CONST.getAllRaces():
@@ -157,9 +157,46 @@ class Player:
         while response not in CONST.getPlayerClasses():
             response = o.read("Be more specific, you're a %s, but what class? "
                               "Enter class (do not indicate specialized "
-                              "classes): ")
+                              "classes): " % self.playerRace)
             response = str(response).capitalize()
+        self.playerClass = response
 
+        response = o.read("Oh my, a %s %s. You must be very proficient. What "
+                          "is your "
+                          "proficiency bonus? Enter proficiency bonus: " % (
+                              self.playerRace, self.playerClass))
+        while True:
+            try:
+                prof = int(response)
+                o.out("Great! Your proficiency bonus is: " + str(prof))
+                break
+            except:
+                response = o.read("Enter a valid bonus please: ")
+
+        o.out("Oh my. Thats mighty proficient of you!")
+
+        o.out("So, tell me more about your stats.")
+        for stat in self.attributes:
+            response = o.read(
+                "Tell me more about your " + stat + ". Enter your " +
+                stat + ": ")
+            while True:
+                try:
+                    value = int(response)
+                    while value > 20 or value < 0:
+                        response = o.read("Come, then, be realistic. What is "
+                                          "your %s? Enter stat: " % stat)
+                        value = int(response)
+
+                    self.attributes[stat] = value
+                    o.out("Great, your %s is %s!" % (stat, value))
+                    break
+
+                except:
+                    response = o.read("Your " + stat + ". What is it? Enter "
+                                                       "stat :")
+
+        print(self.attributes)
 
 class PlayerInterface:
     """This class serves as an interface between the player and the program."""
