@@ -27,3 +27,4 @@ PLAYER_CLASSES = ["Paladin",
                   "Barbarian",
                   "Cleric",
                   ]
+
