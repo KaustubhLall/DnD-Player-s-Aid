@@ -68,6 +68,7 @@ class Player:
     playerHitDieRemaining = 0
     playerUnconscious = False
 
+
     # setter/getter methods for constants
     def setActualPlayerName(self, name):
         self.name = name
