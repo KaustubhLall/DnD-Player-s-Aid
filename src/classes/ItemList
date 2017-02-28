@@ -1,0 +1,26 @@
+# This file contains a manifest of all legal items in the game.
+# Lines starting with a # are not parsed, empty lines are not parsed.
+# The basic format for entering items is:
+# [item name] [item value] [item weight]
+#
+# for specifying value, include a character at the end :
+# 'g' for gold, 's' for silver, 'c' for copper
+# if nothing is specified, it defaults to gold
+#
+# Note, any additional arguments passed are saved into a list
+# associated with the object.
+#
+# ex: quarterstaff 5 3 simple_weapon
+# This creates an item named quarterstaff worth 5 gold, weighing 3lb and tagged "simple_weapon"
+#
+# ex: healing_potion 50s 1 this_is_a_bonus_action_item rare
+# This creates an item named
+# "healing potion", worth 50 silver weighing 1 pound
+# with information "this is a bonus action item", "rare".
+#
+# Note: the _ character is treated as a space when the item name and description are processed.
+#
+
+Quarterstaff 10 5
+Plate_Armor 1500 50
+Arrow 5c 0.1 normal_arrows_for_everyday_use
