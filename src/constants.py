@@ -28,3 +28,18 @@ PLAYER_CLASSES = ["Paladin",
                   "Cleric",
                   ]
 
+
+def getPlayerClasses():
+    return PLAYER_CLASSES
+
+
+def getPlayerRacesVanilla():
+    return PLAYER_RACES_VANILLA
+
+
+def getPlayerRacesUnearthedArcana():
+    return PLAYER_RACES_UNEARTHED_ARCANA
+
+
+def getAllRaces():
+    return PLAYER_RACES_VANILLA + PLAYER_RACES_UNEARTHED_ARCANA

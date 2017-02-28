@@ -1,5 +1,6 @@
 # this dict stores a list of all known items with their name as the key
 itemManifest = {}
+import src.constants as CONST
 
 
 class Player:
@@ -122,11 +123,42 @@ class Player:
                 "No? What is it then. Out with it! Enter name: ")
             affirmation = o.read("%s, did I hear you right this time? ("
                                  "y/n)" % response)
+        self.setCharacterName(response)
+        response = ""
 
         o.out("Well, I must say, it's a pleasure to make your acquaintance.")
         o.out("Who am I, you ask? Well. Nobody really knows who I am. If you "
               "must know, I have been hired to aid the young adventurer who "
-              "goes by the name of %s.")
+              "goes by the name of %s." % self.playerName)
+
+        o.out("In order to help you, I must pick up a few things about you. "
+              "Im afraid i wasn't briefed all that well.")
+        response = o.read("In this day and age, it isn't proper to assume "
+                          "one's race, now is it. So tell me, what race is it "
+                          "that you identify with? Enter race: ")
+        response = str(response).capitalize()
+        while response not in CONST.getAllRaces():
+            response = o.read(
+                "Now there, don't toy with me. %s is clearly not a recognized "
+                "race, tell me your real race." % response)
+            response = str(response).capitalize()
+
+        affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
+                             response)
+
+        while affirmation not in affirmative:
+            response = o.read("Well, out with it. What race are you?")
+            response = str(response).capitalize()
+            affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
+                                 response)
+
+        self.playerRace = response
+
+        while response not in CONST.getPlayerClasses():
+            response = o.read("Be more specific, you're a %s, but what class? "
+                              "Enter class (do not indicate specialized "
+                              "classes): ")
+            response = str(response).capitalize()
 
 
 class PlayerInterface:
