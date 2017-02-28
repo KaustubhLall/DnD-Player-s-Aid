@@ -92,6 +92,19 @@ class Player:
         # TODO Throw exception if player class not found
         self.playerClass = playerClass
 
+    def initializePlayer(self):
+        """This method initializes the player from scratch and loads all
+        relevant information"""
+
+        playerResponse = "y"  # this character tracks the user's input.
+
+
+class interface:
+    """This class serves as an interface between the player and the program."""
+
+    def print(self, message):
+        print(message)
+
 
 class Item:
     """Defines an item object. The item typically will have a name, value,
