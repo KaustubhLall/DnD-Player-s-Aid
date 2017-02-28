@@ -1,4 +1,8 @@
 # this dict stores a list of all known items with their name as the key
+import os
+import platform
+import subprocess
+
 itemManifest = {}
 import src.constants as CONST
 
@@ -44,28 +48,38 @@ class Player:
         "CHA": 0,
     }
 
+    # saving throws saves as KEY = (value, isProficient, isExpert)
+    savingThrows = {
+        "STR": (0, False, False),
+        "DEX": (0, False, False),
+        "CON": (0, False, False),
+        "WIS": (0, False, False),
+        "INT": (0, False, False),
+        "CHA": (0, False, False),
+    }
+
     # Player proficiencies and expertise.
-    # Dict format: "skill": (parentStat, isProficient, isExpert)
+    # Dict format: "skill": (value, parentStat, isProficient, isExpert)
     # Note: All skills are lowercase
     skills = {
-        "athletics"      : ("STR", False, False),
-        "acrobatics"     : ("DEX", False, False),
-        "sleight of hand": ("DEX", False, False),
-        "stealth"        : ("DEX", False, False),
-        "animal handling": ("WIS", False, False),
-        "insight"        : ("WIS", False, False),
-        "medicine"       : ("WIS", False, False),
-        "perception"     : ("WIS", False, False),
-        "survival"       : ("WIS", False, False),
-        "arcana"         : ("INT", False, False),
-        "history"        : ("INT", False, False),
-        "investigation"  : ("INT", False, False),
-        "nature"         : ("INT", False, False),
-        "religion"       : ("INT", False, False),
-        "deception"      : ("CHA", False, False),
-        "intimidation"   : ("CHA", False, False),
-        "performance"    : ("CHA", False, False),
-        "persuasion"     : ("CHA", False, False),
+        "athletics"      : (0, "STR", False, False),
+        "acrobatics"     : (0, "DEX", False, False),
+        "sleight of hand": (0, "DEX", False, False),
+        "stealth"        : (0, "DEX", False, False),
+        "animal handling": (0, "WIS", False, False),
+        "insight"        : (0, "WIS", False, False),
+        "medicine"       : (0, "WIS", False, False),
+        "perception"     : (0, "WIS", False, False),
+        "survival"       : (0, "WIS", False, False),
+        "arcana"         : (0, "INT", False, False),
+        "history"        : (0, "INT", False, False),
+        "investigation"  : (0, "INT", False, False),
+        "nature"         : (0, "INT", False, False),
+        "religion"       : (0, "INT", False, False),
+        "deception"      : (0, "CHA", False, False),
+        "intimidation"   : (0, "CHA", False, False),
+        "performance"    : (0, "CHA", False, False),
+        "persuasion"     : (0, "CHA", False, False),
     }
 
     playerInspiration = False
@@ -105,6 +119,36 @@ class Player:
         # TODO Throw exception if player class not found
         self.playerClass = playerClass
 
+    def calculateAttributeModifiers(self):
+        """Recalculates attribute modifiers based on attributes."""
+        for mod in self.attributeModifiers:
+            self.attributeModifiers[mod] = int((self.attributes[mod]) - 10) / 2
+
+    def calculateSkills(self):
+        """Calculates skills based on attributes, proficiencies and
+        expertise"""
+        for skill in self.skills:
+            with self.skills as entry:
+                # check expertise
+                if entry[3]:
+                    entry[0] = self.attributeModifiers[skill] + 4
+                elif entry[2]:
+                    entry[0] = self.attributeModifiers[skill] + 2
+                else:
+                    entry[0] = self.attributeModifiers[skill]
+
+    def calculateSavingThrows(self):
+        """Calculates saving throws based on attributes, proficiencies and
+        expertise"""
+        for st in self.savingThrows:
+            with self.savingThrows[st] as entry:
+                mod = 0
+                if entry[2]:
+                    mod = 4
+                elif entry[1]:
+                    mod = 2
+                entry[0] = self.attributeModifiers[st] + mod
+
     def initializePlayer(self):
         """This method initializes the player from scratch and loads all
         relevant information"""
@@ -113,16 +157,19 @@ class Player:
         response = ""
 
         o = PlayerInterface()
+        # start basic introduction
+        o.next("Introduction")
+
         o.out("Halt! Who goes there ... ? Identify yourself!")
         response = o.readRaw("I said, identify yourself! Enter name: ")
         affirmation = o.read("%s you said, did I hear that right? (y/n) "
                              % response)
 
         while affirmation not in affirmative:
-            response = o.read(
+            response = o.readRaw(
                 "No? What is it then. Out with it! Enter name: ")
-            affirmation = o.readRaw("%s, did I hear you right this time? ("
-                                 "y/n)" % response)
+            affirmation = o.read("%s, did I hear you right this time? ("
+                                 "y/n) : " % response)
         self.setCharacterName(response)
         response = ""
 
@@ -140,14 +187,16 @@ class Player:
         while response not in CONST.getAllRaces():
             response = o.read(
                 "Now there, don't toy with me. %s is clearly not a recognized "
-                "race, tell me your real race." % response)
+                "race, tell me your real race. Enter race: " % response)
             response = str(response).capitalize()
 
         affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                              response)
 
-        while affirmation not in affirmative:
-            response = o.read("Well, out with it. What race are you?")
+        while affirmation not in affirmative or response not in \
+                CONST.getAllRaces():
+            response = o.read("Well, out with it. What race are you? Enter "
+                              "race: ")
             response = str(response).capitalize()
             affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                                  response)
@@ -161,6 +210,8 @@ class Player:
             response = str(response).capitalize()
         self.playerClass = response
 
+        # calculate proficiency bonus
+        o.next("Attributes")
         response = o.read("Oh my, a %s %s. You must be very proficient. What "
                           "is your "
                           "proficiency bonus? Enter proficiency bonus: " % (
@@ -168,7 +219,7 @@ class Player:
         while True:
             try:
                 prof = int(response)
-                o.out("Great! Your proficiency bonus is: " + str(prof))
+                o.out("Great! Your proficiency bonus is: %+d" % prof)
                 break
             except:
                 response = o.read("Enter a valid bonus please: ")
@@ -178,12 +229,12 @@ class Player:
         o.out("So, tell me more about your stats.")
         for stat in self.attributes:
             response = o.read(
-                "Tell me more about your " + stat + ". Enter your " +
+                "Tell me about your " + stat + ". Enter your " +
                 stat + ": ")
             while True:
                 try:
                     value = int(response)
-                    while value > 20 or value < 0:
+                    while value > 20 or value < 1:
                         response = o.read("Come, then, be realistic. What is "
                                           "your %s? Enter stat: " % stat)
                         value = int(response)
@@ -194,14 +245,50 @@ class Player:
 
                 except:
                     response = o.read("Your " + stat + ". What is it? Enter "
-                                                       "stat :")
+                                                       "stat: ")
 
-        print(self.attributes)
+        # Calculate modifiers
+        for mod in self.attributeModifiers:
+            self.attributeModifiers[mod] = int((self.attributes[mod]) - 10) / 2
+
+        o.next("Player Attributes")
+        o.out("Great, so your attributes are: ")
+        for att in self.attributes:
+            o.out("  + %s : %2d (%+d)" % (att, self.attributes[att],
+                                          self.attributeModifiers[att]))
+
+        # Ask for proficiencies
+        o.out("")
+        affirmation = o.read("Do you have expertise in any saving throws?(y/n)")
+        if affirmation:
+            response = o.read("What saving throws do you have expertise in? "
+                              "Enter saving throws (ex: Strength, con) :")
+            response = str(response).split(",")
+            for word in response:
+                # Format word
+                word.strip()
+                word.upper()
+                if len(word) > 3:
+                    word = word[:3]
+                # check against dictionary
+                while word not in self.savingThrows:
+
+
+        response = o.read("So, what saving throws are you proficient in? "
+                          "Enter proficient saving throws (ex: STR, CON): ")
+
+        # Process proficiencies and expertise
+
 
 class PlayerInterface:
     """This class serves as an interface between the player and the program."""
 
     def out(self, message):
+        """
+        Sends a message to the player.
+        :param message: message to send.
+        :return: None.
+        """
         print(message)
 
     def read(self, message):
@@ -229,6 +316,21 @@ class PlayerInterface:
         if len(userResponse) == 0:
             userResponse = input(message)
         return userResponse
+
+    def next(self, message="", ch=" "):
+        """
+        Enters the next interaction with the user.
+        :param message: optional message to display.
+        :return: None
+        """
+        os.system('cls' if os.name == 'nt' else 'clear')
+        if message != "":
+            message = "+" + message + "+"
+            padding = CONST.TERMINAL_LENGTH - len(message)
+            padding /= 2
+            padding = int(padding)
+            out = message + (padding * ch)
+            print(out + "\n")
 
 
 class Item:

@@ -1,3 +1,5 @@
+TERMINAL_LENGTH = 120  # 120 col terminal
+
 PLAYER_RACES_VANILLA = [
     "Dragonborn",
     "Dwarf",
