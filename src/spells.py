@@ -1,5 +1,6 @@
 import src.constants as CONST
-
+import json
+from pprint import pprint
 
 class SpellBook:
     """Defines a spellbook that a player can maintain."""
@@ -20,6 +21,9 @@ class SpellBook:
         :return: spellList
         """
         spells = {}
+        f = open(fname)
+        data = json.load(f)
+        pprint(data)
         return spells
 
 
@@ -86,3 +90,4 @@ class Spell:
         s += self.description
 
         return s
+s = SpellBook()
