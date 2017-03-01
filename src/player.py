@@ -294,12 +294,12 @@ class Player:
         # display the saving throws
         o.out("\nYour saving throws are:")
         for throw in self.savingThrows:
+            ch = "_"
+            mod = 0
             if self.savingThrows[throw][1]:
-                o.out("  + " + throw + ":(p) %+d " % self.savingThrows[
-                    throw][0])
-            else:
-                o.out("  + " + throw + ":(o) %+d " % self.savingThrows[
-                    throw][0])
+                ch = "p"
+                mod = 2
+            o.out("%+d (%s) : %s" % (self.savingThrows[throw][0], ch, throw))
 
         # move into skills
         o.next("Skills")
@@ -313,6 +313,7 @@ class Player:
             ban = ""
             for word in response:
                 # parse the responses
+                word = word.strip()
                 while word not in self.skills:
                     word = o.read("Sorry, I couldn't quite understand which "
                                   "skill you meant by %s. Could you tell me "
@@ -335,6 +336,7 @@ class Player:
             response = str(response).split(",")
             ban = ""
             for word in response:
+                word = word.strip()
                 # parse the responses
                 while word not in self.skills:
                     word = o.read("Sorry, I couldn't quite understand which "
@@ -353,12 +355,13 @@ class Player:
         self.calculateSkills()
         o.out("\nYour skills are: ")
         for skill in self.skills:
-            ch = "o"  # no proficiency or expertise
+            ch = "_"  # no proficiency or expertise
             if self.skills[skill][3]:
                 ch = "e"  # expertise
             if self.skills[skill][2]:
                 ch = "p"  # proficiency
-            o.out("  +%s: %+d (%s)" % (skill, self.skills[skill][0], ch))
+            o.out(" %+d (%s) : %s" % (self.skills[skill][0], ch,
+                                      str(skill).title()))
 
 
 class PlayerInterface:
