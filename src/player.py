@@ -3,6 +3,7 @@ import os
 import platform
 import subprocess
 from datetime import time
+import json
 
 itemManifest = {}
 import src.constants as CONST
@@ -364,12 +365,22 @@ class Player:
                                       str(skill).title()))
 
     def save(self):
+        """Saves player information as json file"""
         d = {}
-        for attr in self:
+        for attr in dir(self):
             if not attr.startswith('__') and not callable(getattr(self,attr)):
                 d[attr] = getattr(self, attr)
 
         print(d)
+        with open('result.json', 'w') as fp:
+            json.dump(d, fp)
+
+    @staticmethod
+    def load(filename):
+        json_file = open(filename)
+        json_str = json_file.read()
+        d = json.loads(json_str)
+        return d
 
 
 class PlayerInterface:
@@ -530,4 +541,4 @@ class InvalidArgument(Exception):
 
 player = Player()
 player.initializePlayer()
-player.save()
+print(Player.load("result.json"))
