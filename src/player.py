@@ -2,6 +2,7 @@
 import os
 import platform
 import subprocess
+from datetime import time
 
 itemManifest = {}
 import src.constants as CONST
@@ -180,12 +181,12 @@ class Player:
         response = o.read("In this day and age, it isn't proper to assume "
                           "one's race, now is it? So tell me, what race is it "
                           "that you identify with? Enter race: ")
-        response = str(response).capitalize()
+        response = str(response).title()
         while response not in CONST.getAllRaces():
             response = o.read(
                 "Now there, don't toy with me. %s is clearly not a recognized "
                 "race, tell me your real race. Enter race: " % response)
-            response = str(response).capitalize()
+            response = str(response).title()
 
         affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                              response)
@@ -194,7 +195,7 @@ class Player:
                 CONST.getAllRaces():
             response = o.read("Well, out with it. What race are you? Enter "
                               "race: ")
-            response = str(response).capitalize()
+            response = str(response).title()
             affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                                  response)
 
@@ -307,6 +308,7 @@ class Player:
 
         # Calculate the player's saving throws
         self.calculateSavingThrows()
+
         # display the saving throws
         o.out("\nYour saving throws are:")
         for throw in self.savingThrows:

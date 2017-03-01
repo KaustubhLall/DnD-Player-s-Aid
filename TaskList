@@ -19,7 +19,6 @@ Task Queue - Immediate order of tasks.
 Bugs - Knows bugs to fix.
     --> additional item info not correctly parsed for _ char
     --> PLayerInterface next() method doesnt clear console.
-    -->
 
 Features - List of Features to add.
     --> Dictionaries of the races, etc, as constants.
