@@ -50,36 +50,36 @@ class Player:
 
     # Stores saving throws in the format KEY = (value, isProficient, isExpert)
     savingThrows = {
-        "STR": (0, False, False),
-        "DEX": (0, False, False),
-        "CON": (0, False, False),
-        "WIS": (0, False, False),
-        "INT": (0, False, False),
-        "CHA": (0, False, False),
+        "STR": [0, False, False],
+        "DEX": [0, False, False],
+        "CON": [0, False, False],
+        "WIS": [0, False, False],
+        "INT": [0, False, False],
+        "CHA": [0, False, False],
     }
 
     # Player proficiencies and expertise.
     # Dict format: "skill": (value, parentStat, isProficient, isExpert)
     # Note: All skills are lowercase
     skills = {
-        "athletics"      : (0, "STR", False, False),
-        "acrobatics"     : (0, "DEX", False, False),
-        "sleight of hand": (0, "DEX", False, False),
-        "stealth"        : (0, "DEX", False, False),
-        "animal handling": (0, "WIS", False, False),
-        "insight"        : (0, "WIS", False, False),
-        "medicine"       : (0, "WIS", False, False),
-        "perception"     : (0, "WIS", False, False),
-        "survival"       : (0, "WIS", False, False),
-        "arcana"         : (0, "INT", False, False),
-        "history"        : (0, "INT", False, False),
-        "investigation"  : (0, "INT", False, False),
-        "nature"         : (0, "INT", False, False),
-        "religion"       : (0, "INT", False, False),
-        "deception"      : (0, "CHA", False, False),
-        "intimidation"   : (0, "CHA", False, False),
-        "performance"    : (0, "CHA", False, False),
-        "persuasion"     : (0, "CHA", False, False),
+        "athletics"      : [0, "STR", False, False],
+        "acrobatics"     : [0, "DEX", False, False],
+        "sleight of hand": [0, "DEX", False, False],
+        "stealth"        : [0, "DEX", False, False],
+        "animal handling": [0, "WIS", False, False],
+        "insight"        : [0, "WIS", False, False],
+        "medicine"       : [0, "WIS", False, False],
+        "perception"     : [0, "WIS", False, False],
+        "survival"       : [0, "WIS", False, False],
+        "arcana"         : [0, "INT", False, False],
+        "history"        : [0, "INT", False, False],
+        "investigation"  : [0, "INT", False, False],
+        "nature"         : [0, "INT", False, False],
+        "religion"       : [0, "INT", False, False],
+        "deception"      : [0, "CHA", False, False],
+        "intimidation"   : [0, "CHA", False, False],
+        "performance"    : [0, "CHA", False, False],
+        "persuasion"     : [0, "CHA", False, False],
     }
 
     playerInspiration = False
@@ -128,26 +128,23 @@ class Player:
         """Calculates skills based on attributes, proficiencies and
         expertise"""
         for skill in self.skills:
-            with self.skills as entry:
-                # check expertise
-                if entry[3]:
-                    entry[0] = self.attributeModifiers[skill] + 4
-                elif entry[2]:
-                    entry[0] = self.attributeModifiers[skill] + 2
-                else:
-                    entry[0] = self.attributeModifiers[skill]
+            if self.skills[skill][3]:
+                self.skills[skill][0] = self.attributeModifiers[skill] + 4
+            elif self.skills[skill][2]:
+                self.skills[skill][0] = self.attributeModifiers[skill] + 2
+            else:
+                self.skills[skill][0] = self.attributeModifiers[skill]
 
     def calculateSavingThrows(self):
         """Calculates saving throws based on attributes, proficiencies and
         expertise"""
         for st in self.savingThrows:
-            with self.savingThrows[st] as entry:
-                mod = 0
-                if entry[2]:
-                    mod = 4
-                elif entry[1]:
-                    mod = 2
-                entry[0] = self.attributeModifiers[st] + mod
+            mod = 0
+            if self.savingThrows[st][2]:
+                mod = 4
+            elif self.savingThrows[1]:
+                mod = 2
+            self.savingThrows[0] = self.attributeModifiers[st] + mod
 
     def initializePlayer(self):
         """This method initializes the player from scratch and loads all
@@ -267,8 +264,7 @@ class Player:
             for word in response:
                 ban = ""  # any banned word is stored here
                 # Format word
-                word.strip()
-                word.upper()
+                word = word.strip().upper()
                 if len(word) > 3:
                     word = word[:3]
                 # check against dictionary
@@ -294,8 +290,7 @@ class Player:
         for word in response:
             ban = ""  # any banned word is stored here
             # Format word
-            word.strip()
-            word.upper()
+            word = word.strip().upper()
             if len(word) > 3:
                 word = word[:3]
             # check against dictionary
@@ -304,7 +299,7 @@ class Player:
                                   "throw. Try again (enter n to cancel): "
                                   "" % word)
                 word = word.upper().strip()
-                if word == "N":
+                if word == "N" or word == "n":
                     ban = word
                     break
             if word != ban:
@@ -346,7 +341,7 @@ class Player:
                         ban = word
                         break
 
-                    word.strip()
+                    word = word.strip()
                 if word != ban:
                     self.skills[word][3] = True
 
@@ -369,7 +364,7 @@ class Player:
                         ban = word
                         break
 
-                    word.strip()
+                    word = word.strip()
                 if word != ban:
                     self.skills[word][2] = True
 
