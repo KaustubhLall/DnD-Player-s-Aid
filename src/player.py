@@ -355,7 +355,7 @@ class Player:
         # Calculate the player's skill checks
         self.calculateSkills()
         o.out("\nYour skills are: ")
-        for skill in self.skills:
+        for skill in sorted(self.skills):
             ch = "_"  # no proficiency or expertise
             if self.skills[skill][3]:
                 ch = "e"  # expertise
@@ -544,4 +544,5 @@ class InvalidArgument(Exception):
 
 player = Player()
 player.initializePlayer()
+player.save()
 print(Player.load("result.json"))

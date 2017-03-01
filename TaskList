@@ -17,6 +17,8 @@ Task Queue - Immediate order of tasks.
 
 
 Bugs - Knows bugs to fix.
+    --> order of attributes
+    --> calculation of negative modifie
     --> additional item info not correctly parsed for _ char
     --> PLayerInterface next() method doesnt clear console.
 
