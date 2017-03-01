@@ -51,12 +51,12 @@ class Player:
 
     # Stores saving throws in the format KEY = (value, isProficient, isExpert)
     savingThrows = {
-        "STR": [0, False, False],
-        "DEX": [0, False, False],
-        "CON": [0, False, False],
-        "WIS": [0, False, False],
-        "INT": [0, False, False],
-        "CHA": [0, False, False],
+        "STR": [0, False],
+        "DEX": [0, False],
+        "CON": [0, False],
+        "WIS": [0, False],
+        "INT": [0, False],
+        "CHA": [0, False],
     }
 
     # Player proficiencies and expertise.
@@ -129,23 +129,25 @@ class Player:
         """Calculates skills based on attributes, proficiencies and
         expertise"""
         for skill in self.skills:
+            ability = self.skills[skill][1]
+
             if self.skills[skill][3]:
-                self.skills[skill][0] = self.attributeModifiers[skill] + 4
+                self.skills[skill][0] = self.attributeModifiers[ability] + 4
+
             elif self.skills[skill][2]:
-                self.skills[skill][0] = self.attributeModifiers[skill] + 2
+                self.skills[skill][0] = self.attributeModifiers[ability] + 2
+
             else:
-                self.skills[skill][0] = self.attributeModifiers[skill]
+                self.skills[skill][0] = self.attributeModifiers[ability]
 
     def calculateSavingThrows(self):
         """Calculates saving throws based on attributes, proficiencies and
         expertise"""
         for st in self.savingThrows:
             mod = 0
-            if self.savingThrows[st][2]:
-                mod = 4
-            elif self.savingThrows[1]:
+            if self.savingThrows[st][1]:
                 mod = 2
-            self.savingThrows[0] = self.attributeModifiers[st] + mod
+            self.savingThrows[st][0] = self.attributeModifiers[st] + mod
 
     def initializePlayer(self):
         """This method initializes the player from scratch and loads all
@@ -181,21 +183,26 @@ class Player:
         response = o.read("In this day and age, it isn't proper to assume "
                           "one's race, now is it? So tell me, what race is it "
                           "that you identify with? Enter race: ")
-        response = str(response).title()
+        response = str(response).title().replace("-", " ")
         while response not in CONST.getAllRaces():
             response = o.read(
                 "Now there, don't toy with me. %s is clearly not a recognized "
                 "race, tell me your real race. Enter race: " % response)
-            response = str(response).title()
+            response = str(response).title().replace("-", " ")
 
         affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                              response)
 
-        while affirmation not in affirmatives or response not in \
-                CONST.getAllRaces():
+        while affirmation not in affirmatives:
             response = o.read("Well, out with it. What race are you? Enter "
                               "race: ")
-            response = str(response).title()
+            response = str(response).title().replace("-", " ")
+
+            while response not in CONST.getAllRaces():
+                response = o.read("Well, out with it. What race are you? Enter "
+                                  "race: ")
+                response = str(response).title().replace("-", " ")
+
             affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                                  response)
 
@@ -255,31 +262,6 @@ class Player:
             o.out("  + %s : %2d (%+d)" % (att, self.attributes[att],
                                           self.attributeModifiers[att]))
 
-        # Ask for saving throw expertise
-        o.out("")
-        affirmation = o.read("Do you have expertise in any saving throws?(y/n)")
-        if affirmation in affirmatives:
-            response = o.read("What saving throws do you have expertise in? "
-                              "Enter saving throws (ex: Strength, con) :")
-            response = str(response).split(",")
-            for word in response:
-                ban = ""  # any banned word is stored here
-                # Format word
-                word = word.strip().upper()
-                if len(word) > 3:
-                    word = word[:3]
-                # check against dictionary
-                while word not in self.savingThrows:
-                    response = o.read("Looks like %s isnt a valid saving "
-                                      "throw. Try again (enter n to cancel): "
-                                      "" % word)
-                    word = word.upper().strip()
-                    if word == "N":
-                        ban = word
-                        break
-                if word != ban:
-                    self.savingThrows[word][2] = True
-
         o.out("")
 
         # ask for saving throw proficiencies
@@ -296,9 +278,9 @@ class Player:
                 word = word[:3]
             # check against dictionary
             while word not in self.savingThrows:
-                response = o.read("Looks like %s isnt a valid saving "
-                                  "throw. Try again (enter n to cancel): "
-                                  "" % word)
+                word = o.read("Looks like %s isnt a valid saving "
+                              "throw. Try again (enter n to cancel): "
+                              "" % word)
                 word = word.upper().strip()
                 if word == "N" or word == "n":
                     ban = word
@@ -312,10 +294,7 @@ class Player:
         # display the saving throws
         o.out("\nYour saving throws are:")
         for throw in self.savingThrows:
-            if self.savingThrows[throw][2]:
-                o.out("  + " + throw + ":(e) %+d " % self.savingThrows[
-                    throw][0])
-            elif self.savingThrows[throw][1]:
+            if self.savingThrows[throw][1]:
                 o.out("  + " + throw + ":(p) %+d " % self.savingThrows[
                     throw][0])
             else:
@@ -379,7 +358,7 @@ class Player:
                 ch = "e"  # expertise
             if self.skills[skill][2]:
                 ch = "p"  # proficiency
-            o.out("  +%s: %+d (%s)" % (skill, self.skills[skill][1], ch))
+            o.out("  +%s: %+d (%s)" % (skill, self.skills[skill][0], ch))
 
 
 class PlayerInterface:
