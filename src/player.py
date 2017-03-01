@@ -48,7 +48,7 @@ class Player:
         "CHA": 0,
     }
 
-    # saving throws saves as KEY = (value, isProficient, isExpert)
+    # Stores saving throws in the format KEY = (value, isProficient, isExpert)
     savingThrows = {
         "STR": (0, False, False),
         "DEX": (0, False, False),
@@ -152,7 +152,7 @@ class Player:
     def initializePlayer(self):
         """This method initializes the player from scratch and loads all
         relevant information"""
-        affirmative = ["yes", "y"]
+        affirmatives = ["yes", "y"]
         affirmation = "y"  # this character tracks the user's input.
         response = ""
 
@@ -165,7 +165,7 @@ class Player:
         affirmation = o.read("%s you said, did I hear that right? (y/n) "
                              % response)
 
-        while affirmation not in affirmative:
+        while affirmation not in affirmatives:
             response = o.readRaw(
                 "No? What is it then. Out with it! Enter name: ")
             affirmation = o.read("%s, did I hear you right this time? ("
@@ -193,7 +193,7 @@ class Player:
         affirmation = o.read("So then, you're sure you're a %s? (y/n)" %
                              response)
 
-        while affirmation not in affirmative or response not in \
+        while affirmation not in affirmatives or response not in \
                 CONST.getAllRaces():
             response = o.read("Well, out with it. What race are you? Enter "
                               "race: ")
@@ -257,14 +257,15 @@ class Player:
             o.out("  + %s : %2d (%+d)" % (att, self.attributes[att],
                                           self.attributeModifiers[att]))
 
-        # Ask for proficiencies
+        # Ask for saving throw expertise
         o.out("")
         affirmation = o.read("Do you have expertise in any saving throws?(y/n)")
-        if affirmation:
+        if affirmation in affirmatives:
             response = o.read("What saving throws do you have expertise in? "
                               "Enter saving throws (ex: Strength, con) :")
             response = str(response).split(",")
             for word in response:
+                ban = ""  # any banned word is stored here
                 # Format word
                 word.strip()
                 word.upper()
@@ -272,12 +273,116 @@ class Player:
                     word = word[:3]
                 # check against dictionary
                 while word not in self.savingThrows:
+                    response = o.read("Looks like %s isnt a valid saving "
+                                      "throw. Try again (enter n to cancel): "
+                                      "" % word)
+                    word = word.upper().strip()
+                    if word == "N":
+                        ban = word
+                        break
+                if word != ban:
+                    self.savingThrows[word][2] = True
 
+        o.out("")
 
+        # ask for saving throw proficiencies
         response = o.read("So, what saving throws are you proficient in? "
                           "Enter proficient saving throws (ex: STR, CON): ")
 
         # Process proficiencies and expertise
+        response = str(response).split(",")
+        for word in response:
+            ban = ""  # any banned word is stored here
+            # Format word
+            word.strip()
+            word.upper()
+            if len(word) > 3:
+                word = word[:3]
+            # check against dictionary
+            while word not in self.savingThrows:
+                response = o.read("Looks like %s isnt a valid saving "
+                                  "throw. Try again (enter n to cancel): "
+                                  "" % word)
+                word = word.upper().strip()
+                if word == "N":
+                    ban = word
+                    break
+            if word != ban:
+                self.savingThrows[word][1] = True
+
+        # Calculate the player's saving throws
+        self.calculateSavingThrows()
+        # display the saving throws
+        o.out("\nYour saving throws are:")
+        for throw in self.savingThrows:
+            if self.savingThrows[throw][2]:
+                o.out("  + " + throw + ":(e) %+d " % self.savingThrows[
+                    throw][0])
+            elif self.savingThrows[throw][1]:
+                o.out("  + " + throw + ":(p) %+d " % self.savingThrows[
+                    throw][0])
+            else:
+                o.out("  + " + throw + ":(o) %+d " % self.savingThrows[
+                    throw][0])
+
+        # move into skills
+        o.next("Skills")
+        affirmation = o.read("Do you have expertise in any skills? (y/n)")
+        if affirmation in affirmatives:
+            # handle expertise for skills
+            response = o.read(
+                "So what skills do you have expertise in? Enter skills as "
+                "acrobatics, athletics, persuasion ... :")
+            response = str(response).split(",")
+            ban = ""
+            for word in response:
+                # parse the responses
+                while word not in self.skills:
+                    word = o.read("Sorry, I couldn't quite understand which "
+                                  "skill you meant by %s. Could you tell me "
+                                  "once more (enter n if wrong output is "
+                                  "shown): " % word)
+                    if word == "n":
+                        ban = word
+                        break
+
+                    word.strip()
+                if word != ban:
+                    self.skills[word][3] = True
+
+        affirmation = o.read("\nDo you have proficiencies in any skills? (y/n)")
+        if affirmation in affirmatives:
+            # handle proficiencies for skills
+            response = o.read(
+                "So what skills do you have proficiency in? Enter skills as "
+                "acrobatics, athletics, persuasion ... :")
+            response = str(response).split(",")
+            ban = ""
+            for word in response:
+                # parse the responses
+                while word not in self.skills:
+                    word = o.read("Sorry, I couldn't quite understand which "
+                                  "skill you meant by %s. Could you tell me "
+                                  "once more (enter n if wrong output is "
+                                  "shown): " % word)
+                    if word == "n":
+                        ban = word
+                        break
+
+                    word.strip()
+                if word != ban:
+                    self.skills[word][2] = True
+
+        # Calculate the player's skill checks
+        self.calculateSkills()
+        o.out("\nYour skills are: ")
+        for skill in self.skills:
+            ch = "o"  # no proficiency or expertise
+            if self.skills[skill][3]:
+                ch = "e"  # expertise
+            if self.skills[skill][2]:
+                ch = "p"  # proficiency
+            o.out("  +%s: %+d (%s)" % (skill, self.skills[skill][1], ch))
 
 
 class PlayerInterface:
