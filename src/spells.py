@@ -21,6 +21,10 @@ class SpellBook:
         :param fname: file to populate from.
         :return: spellList
         """
+        # the spells is added with the following pattern:
+        # "spellname" : correspondingSpellObject (see __init__ method for the
+        #  Spell class) @Ahan TODO
+
         spells = {}
         f = open(fname)
         data = json.load(f)
