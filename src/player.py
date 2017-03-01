@@ -278,7 +278,7 @@ class Player:
                 word = word[:3]
             # check against dictionary
             while word not in self.savingThrows:
-                word = o.read("Looks like %s isnt a valid saving "
+                word = o.read("Looks like %s isn't a valid saving "
                               "throw. Try again (enter n to cancel): "
                               "" % word)
                 word = word.upper().strip()
@@ -360,8 +360,11 @@ class Player:
                 ch = "e"  # expertise
             if self.skills[skill][2]:
                 ch = "p"  # proficiency
-            o.out(" %+d (%s) : %s" % (self.skills[skill][0], ch,
-                                      str(skill).title()))
+            o.out(" %+d (%s) : %s (%s)" % (self.skills[skill][0], ch,
+                                           str(skill).title(),
+                                           self.skills[skill][1]))
+
+        o.next("HP and hit dice.")
 
 
 class PlayerInterface:
