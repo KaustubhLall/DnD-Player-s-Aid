@@ -381,6 +381,14 @@ class Player:
                 ch = "p"  # proficiency
             o.out("  +%s: %+d (%s)" % (skill, self.skills[skill][1], ch))
 
+    def save(self):
+        d = {}
+        for attr in self:
+            if not attr.startswith('__') and not callable(getattr(self,attr)):
+                d[attr] = getattr(self, attr)
+
+        print(d)
+
 
 class PlayerInterface:
     """This class serves as an interface between the player and the program."""
@@ -540,3 +548,4 @@ class InvalidArgument(Exception):
 
 player = Player()
 player.initializePlayer()
+player.save()
