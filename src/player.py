@@ -371,7 +371,7 @@ class Player:
         """Saves player information as json file"""
         d = {}
         for attr in dir(self):
-            if not attr.startswith('__') and not callable(getattr(self,attr)):
+            if not attr.startswith('__') and not callable(getattr(self, attr)):
                 d[attr] = getattr(self, attr)
 
         print(d)
