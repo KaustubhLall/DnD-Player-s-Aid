@@ -15,6 +15,18 @@ class SpellBook:
         """
         self.spellList = self.populateSpellList(CONST.PATH_TO_SPELL_LIST)
 
+    def searchList(self, s):
+        """
+        Searches the known spellist for spells that might match s and returns
+        a list of all possible hits.
+        :param s: Spell to search for.
+        :return: list of spells found with the name.
+        """
+        s = str(s)
+        s = s.title()
+
+        # TODO
+
     def populateSpellList(self, fname):
         """
         Populates the spell list from the given file.
@@ -26,9 +38,16 @@ class SpellBook:
         #  Spell class) @Ahan TODO
 
         spells = {}
-        f = open(fname)
-        data = json.load(f)
-        pprint(data)
+        f = open(fname, encoding="utf8")
+        stringData = ""
+
+        for line in f:
+            stringData += line
+
+        data = json.loads(stringData)
+        for key in sorted(data):
+            print(key)
+
         return spells
 
 

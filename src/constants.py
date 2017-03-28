@@ -2,6 +2,8 @@ import os
 
 TERMINAL_LENGTH = 120  # 120 col terminal
 PATH_TO_SPELL_LIST = os.path.expanduser("../assets/spells.json")
+PATH_TO_ITEM_LIST = os.path.expanduser("../assets/ItemList")
+
 PLAYER_RACES_VANILLA = [
     "Dragonborn",
     "Dwarf",

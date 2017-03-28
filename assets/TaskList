@@ -2,6 +2,8 @@ Task Queue - Immediate order of tasks.
     --> Spells class
         > should have a list of all spells
         > spellbook class.
+        > Partial string-matching search in the spellbook.
+        
 
     --> First time interface. -- kaus
     --> Implement a basic player class.
