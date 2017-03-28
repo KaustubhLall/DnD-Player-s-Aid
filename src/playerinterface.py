@@ -1,5 +1,5 @@
 import os
-import src.constants as constants
+import src.constants as CONST
 
 
 class PlayerInterface:
@@ -54,3 +54,19 @@ class PlayerInterface:
             out = message + (padding * ch)
             print(out + "\n")
 
+    def confirm(self, s):
+        """
+        Prompts the user to confirm an action with the given input string.
+        :param s: string to prompt for.
+        :return: true if user is affirmative, else false.
+        """
+        AFFIRMATIVES = ["y", "yes"]
+        NEGATIVES = ["n", "no"]
+        response = self.read(s + "(y/n) : ")
+
+        if response in AFFIRMATIVES:
+            return True
+        elif response in NEGATIVES:
+            return False
+        else:
+            return self.confirm(s)

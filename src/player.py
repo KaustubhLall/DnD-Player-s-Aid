@@ -7,6 +7,7 @@ import json
 
 itemManifest = {}
 import src.constants as CONST
+from src.playerinterface import *
 
 
 class Player:
@@ -377,6 +378,13 @@ class Player:
         print(d)
         with open('result.json', 'w') as fp:
             json.dump(d, fp)
+
+    def printStatus(self):
+        """
+        Prints the current status of the player.
+        :return: status string
+        """
+        return "Implementing player status."
 
     @staticmethod
     def load(filename):
