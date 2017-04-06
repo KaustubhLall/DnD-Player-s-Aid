@@ -1,4 +1,4 @@
-import cmd, src.player as Player
+import cmd, src.player as Player, src.display
 
 player = Player.Player()
 
@@ -8,6 +8,7 @@ class CombatShell(cmd.Cmd):
     Handles one instance of combat.
     """
     aliases = {}
+    disp = src.display.Display(player)
 
     ###############################
     # Shell Setup                 #
@@ -15,7 +16,11 @@ class CombatShell(cmd.Cmd):
     def __init__(self):
         cmd.Cmd.__init__(self)
         self.aliases = {
-            'd': self.do_damage,
+            'd'   : self.do_damage,
+            'e'   : self.do_exit,
+            'q'   : self.do_exit,
+            'quit': self.do_exit,
+            'm'   : self.do_move,
         }
 
     def preloop(self):
@@ -23,6 +28,7 @@ class CombatShell(cmd.Cmd):
         Preloop
         :return:
         """
+        player.load('result.json')
         print("The pre-loop setup entered successfully.")
 
     def postloop(self):
@@ -30,7 +36,28 @@ class CombatShell(cmd.Cmd):
         Postloop.
         :return:
         """
+        player.save()
         print("The postloop cleanup happened.")
+
+    def default(self, line):
+        """
+        Handles aliasing.
+        :param args:
+        :return:
+        """
+        cmd, arg, line = self.parseline(line)
+        if cmd in self.aliases:
+            self.aliases[cmd](arg)
+        else:
+            print("*** Unknown syntax: %s" % line)
+
+    def postcmd(self, stop, line):
+        """
+        Runs status before each command is executed.
+        :param line:
+        :return:
+        """
+        print(self.disp.quickDisplay())
 
     #########################
     # Help Messages         #
@@ -43,8 +70,38 @@ class CombatShell(cmd.Cmd):
     # Methods for Commands       #
     ##############################
 
+    def do_tempHP(self, args):
+        """
+        Adds temporary HP to the player.
+        :param args: amount to add
+        :return:
+        """
+        amount = 0
+        try:
+            amount = int(args)
+        except ValueError:
+            print("Usage: tempHP <tempHP_to_add>")
+
+        player.playerTempHP = amount
+
     def do_heal(self, args):
+        """
+        Heals the player for a certain amount.
+        :param args:
+        :return:
+        """
         args = args.split(" ")
+        heal_amount = 0
+
+        # try parsing the heal amount
+        try:
+            heal_amount = int(args[0])
+        except ValueError:
+            print("Usage: heal <amount>")
+            return False
+
+        # do the things
+        player.heal(heal_amount)
 
     def do_damage(self, args):
         """
@@ -54,31 +111,71 @@ class CombatShell(cmd.Cmd):
         """
         # Check valid #
         args = args.split(" ")
+        # print("Args: %s." % args)
         if len(args) == 0:
             print("Usage: d/damage <amount_in_numbers>")
             return False
 
         dmg = -1
         try:
-            dmg = int(args[1])
+            dmg = int(args[0])
         except ValueError:
             print("Usage: d/damage <amount_in_numbers>")
             return False
 
         # apply damage #
         alive = player.damage(dmg)
-        print("You just took %d points of damage!")
+        print("You just took %d points of damage!" % dmg)
 
         if not alive:
             print("You just fell unconscious!")
+
+    def do_exit(self, args):
+        """
+        Exits the combat shell.
+        :param args: arguments passed, irrelevant.
+        :return: True.
+        """
+        print("Combat ends.")
         return True
+
+    def do_spell(self, args):
+        """
+        Looks up a spell in the database and prints it out.
+        :param args: SpellName to search for.
+        :return:
+        """
+        spell = None
+        # Todo searching and shit
+        pass
+
+    def do_move(self, args):
+        """
+        Moves the player specified amount.
+        :param args: feet to move.
+        :return:
+        """
+        amount = 0
+        try:
+            amount = int(args)
+        except:
+            print("Usage: move <amount in feet>")
+            return
+        player.move(amount)
 
 
 class MainShell(cmd.Cmd):
+    """
+    This is the main shell that the player interacts with. It enters into different modes like combat with an
+    instance of the combat shell, etc.
+    """
     combat_shell = None
     aliases = {}
 
     def __init__(self):
+        """
+        Initliazes object and superclass, as well as sets up a list of aliases.
+        """
         # Call superclass ctor
         cmd.Cmd.__init__(self)
 
@@ -96,10 +193,19 @@ class MainShell(cmd.Cmd):
     #####################################
 
     def preloop(self):
+        """
+        Executed before the main interface begins. Do introduction and player load/save here.
+        :return:
+        """
         # TODO load player object here
         print("Welcome to DnD Tool!")
 
     def postloop(self):
+        """
+        Exceuted when the shell loop finishes. Do autosave and exit message here.
+        :return:
+        """
+        # TODO session statistics.
         # TODO Exit shell succesfully
         pass
 

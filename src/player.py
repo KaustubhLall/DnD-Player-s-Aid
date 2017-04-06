@@ -30,6 +30,7 @@ class Player:
     playerFlaws = ""
     playerBackground = ""
 
+    ##################################
     # Player Variables Go After Here #
     ##################################
 
@@ -90,8 +91,8 @@ class Player:
     playerInitiative = 0
     playerSpeed = 0
     playerPassivePerception = 0
-    playerHP = 0
-    playerMaxHP = 0
+    playerHP = 24
+    playerMaxHP = 30
     playerTempHP = 0
     playerHitDieType = 0
     playerHitDieTotal = 0
@@ -100,8 +101,12 @@ class Player:
     playerDeathFails = 0
     playerDeathSuccesses = 0
     playerStable = True
+    movementSpeed = 0
 
     # setter/getter methods for constants
+    def __init__(self):
+        self.movementSpeed = 30
+
     def setActualPlayerName(self, name):
         self.name = name
 
@@ -376,7 +381,7 @@ class Player:
                 d[attr] = getattr(self, attr)
 
         print(d)
-        with open('result.json', 'w') as fp:
+        with open('save.json', 'w') as fp:
             json.dump(d, fp)
 
     def printStatus(self):
@@ -386,25 +391,54 @@ class Player:
         """
         return "Implementing player status."
 
-    @staticmethod
-    def load(filename):
+    def load(self, filename):
         json_file = open(filename)
         json_str = json_file.read()
         d = json.loads(json_str)
-        return d
+        for attr in d:
+            dir(self)[attr] = d[attr]
+        print("Player loaded!")
 
     def startNewRound(self):
         print("New Round Started.")
 
     def damage(self, dmg):
         """
-        Subtracts from playerHP.
-        :param dmg: amount to substract.
+        Deals damage taking into account temporary hp and player hp.
+        :param dmg: amount to subtract.
         :return: True if player is alive, False if unconscious.
         """
+        # temp hp soak
+        if self.playerTempHP != 0:
+            if dmg > self.playerTempHP:
+                dmg -= self.playerTempHP
+                self.playerTempHP = 0
+            else:
+                self.playerTempHP -= dmg
+                return
+
         self.playerHP -= dmg
 
-        return self.playerHP > 0
+        return self.playerHP <= 0
+
+    def heal(self, heal_amount):
+        """
+        Heals the player upto full HP.
+        :param heal_amount: amount to heal up to, doesnt go above full HP.
+        :return:
+        """
+        if self.playerHP + heal_amount > self.playerMaxHP:
+            self.playerHP = self.playerMaxHP
+        else:
+            self.playerHP += heal_amount
+
+    def move(self, amount):
+        """
+        Moves player by given amount.
+        :param amount: feet to move.
+        :return:
+        """
+        self.movementSpeed -= amount
 
 
 class Item:
