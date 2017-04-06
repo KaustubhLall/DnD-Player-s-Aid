@@ -47,11 +47,11 @@ COMBAT_COMMANDS = ["help", "h", "?",
                    "d",
                    ]
 
-COMBAT_HELP = "The commands possible are:\nhelp/h : get help\nspell/s <spell " \
+COMBAT_HELP = "The commands possible are:\n\thelp/h : get help\n\tspell/s <spell " \
               "name> : looks up the spell in the known spellbase and prints " \
-              "it. If no argument is specified, prints known spells.\nmove/m " \
+              "it. If no argument is specified, prints known spells.\n\tmove/m " \
               "<movement distance> : subtracts the distance from your total " \
-              "movement speed.\nd <amount> : take <amount> damage.\nst <STAT> " \
+              "movement speed.\n\td <amount> : take <amount> damage.\n\tst <STAT> " \
               ": make a savin throw for a given stat.\n"
 
 

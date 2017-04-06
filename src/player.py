@@ -393,6 +393,18 @@ class Player:
         d = json.loads(json_str)
         return d
 
+    def startNewRound(self):
+        print("New Round Started.")
+
+    def damage(self, dmg):
+        """
+        Subtracts from playerHP.
+        :param dmg: amount to substract.
+        :return: True if player is alive, False if unconscious.
+        """
+        self.playerHP -= dmg
+
+        return self.playerHP > 0
 
 
 class Item:
@@ -497,8 +509,8 @@ class InvalidArgument(Exception):
 # test code
 # itemManifest = Item.loadItemManifest("ItemList")
 # print(itemManifest)
-
-player = Player()
-player.initializePlayer()
-player.save()
-print(Player.load("result.json"))
+def test():
+    player = Player()
+    player.initializePlayer()
+    player.save()
+    print(Player.load("result.json"))

@@ -4,8 +4,10 @@
 # for example, when a  player enters combat, the control is transferred to the
 # combat subshell. These will be defined as methods inside this package,
 # or within other .py files.
+
 import src.playerinterface as interface
 import src.constants as CONST
+from src.player import Player
 from src.spells import SpellBook as spells
 
 shell = interface.PlayerInterface()
@@ -18,72 +20,74 @@ def combatSubshell(player):
     :return:
     """
 
-    with CONST.SUBSHELL_COMBAT_MESSAGES as messages:
-        # enter into combat subshell
-        shell.next(messages["Enter"])
-        endCombat = False
-        combatRound = 0
-        while not endCombat:
-            # start a new round
-            shell.next("You are in round %d of combat." % combatRound)
-            player.startNewRound()
+    messages = CONST.SUBSHELL_COMBAT_MESSAGES
+    # enter into combat subshell
+    shell.next(messages["shell_enter"])
+    endCombat = False
+    combatRound = 0
 
-            ##### parse commands #####
-            response = shell.read("Enter a command. Press h for help.")
-            workingCommand = tokenizeCommand(response, CONST.COMBAT_COMMANDS)
+    # while in combat, loop things.
+    while not endCombat:
+        # start a new round
+        shell.next("You are in round %d of combat." % combatRound)
+        player.startNewRound()
 
-            # check for invalid commands
-            if workingCommand[0] == None:
-                response = tokenizeCommand(shell.read(
-                    "Type help/h/? for a list of all commands. End/e/q to end "
-                    "combat."),
-                    CONST.COMBAT_COMMANDS)
+        ##### parse commands #####
+        response = shell.read("Enter a command. Press h for help.")
+        workingCommand = tokenizeCommand(response, CONST.COMBAT_COMMANDS)
 
-            # check for end shell
-            if workingCommand[0] in ["e", "end"]:
-                shell.out("Combat ended.")
-                shell.out(player.printStatus())
-                return
+        # check for invalid commands
+        if workingCommand[0] == None:
+            response = tokenizeCommand(shell.read(
+                "Type help/h/? for a list of all commands. End/e/q to end "
+                "combat."),
+                CONST.COMBAT_COMMANDS)
 
-            # check for help command
-            if workingCommand[0] in ["h", "help", "?"]:
-                shell.out(CONST.COMBAT_HELP)
+        # check for end shell
+        if workingCommand[0] in ["e", "end"]:
+            shell.out("Combat ended.")
+            shell.out(player.printStatus())
+            return
 
-            ##### deliver valid commands #####
-            # check for damage command
+        # check for help command
+        if workingCommand[0] in ["h", "help", "?"]:
+            shell.out(CONST.COMBAT_HELP)
 
-            if workingCommand[0] == "d":
-                amount = 0
-                if len(workingCommand) > 1:
-                    try:
-                        amount = int(workingCommand[1])
-                    except ValueError:
-                        shell.out("Invalid damage entered.")
-                player.damage(amount)
-                shell.out("Player took %d damage." % amount)
+        ##### deliver valid commands #####
+        # check for damage command
 
-            # check for move command
-            if workingCommand[0] in ["m", "move"]:
-                amount = 0
-                if len(workingCommand) > 1:
-                    try:
-                        amount = int(workingCommand[1])
-                    except ValueError:
-                        shell.out("Distance not valid.")
+        if workingCommand[0] == "d":
+            amount = 0
+            if len(workingCommand) > 1:
+                try:
+                    amount = int(workingCommand[1])
+                except ValueError:
+                    shell.out("Invalid damage entered.")
+            player.damage(amount)
+            shell.out("Player took %d damage." % amount)
 
-                player.move(amount)
-                shell.out("Moved player %2dft." % amount)
+        # check for move command
+        if workingCommand[0] in ["m", "move"]:
+            amount = 0
+            if len(workingCommand) > 1:
+                try:
+                    amount = int(workingCommand[1])
+                except ValueError:
+                    shell.out("Distance not valid.")
 
-            # check for spell
-            if workingCommand[0] in ["s", "spell"]:
-                if len(workingCommand) == 1:
-                    shell.out(player.printSpells())
+            player.move(amount)
+            shell.out("Moved player %2dft." % amount)
+
+        # check for spell
+        if workingCommand[0] in ["s", "spell"]:
+            if len(workingCommand) == 1:
+                shell.out(player.printSpells())
+            else:
+                spell = workingCommand[1]
+                if spells.searchList(spell) != []:
+                    shell.out(spells.print(spell))
                 else:
-                    spell = workingCommand[1]
-                    if spells.searchList(spell) != []:
-                        shell.out(spells.print(spell))
-                    else:
-                        shell.out("Spell %s doesnt exist in database." % spell)
+                    shell.out("Spell %s doesnt exist in database." % spell)
 
 
 def inventorySubshell(player):
@@ -123,8 +127,14 @@ def tokenizeCommand(s, commandSublist=CONST.KNOWN_COMMANDS):
     args = s.split(" ")
 
     for command in args:
+        command = command.strip()
         if command in commandSublist:
             sliceAt = args.index(command)
             return command, args[sliceAt + 1:]
 
-    return (None, args)
+    return None, args
+
+
+player = Player()
+
+combatSubshell(player)
