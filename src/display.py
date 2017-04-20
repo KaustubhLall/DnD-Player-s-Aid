@@ -16,6 +16,7 @@ class Display():
         Shows skills with proficiency, bonus and expertise.
         :return: string of data
         """
+        # TODO
         pass
 
     def quickDisplay(self):

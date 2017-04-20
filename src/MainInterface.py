@@ -1,4 +1,6 @@
-import cmd, src.player as Player, src.display
+import cmd
+import src.display
+import src.player as Player
 
 player = Player.Player()
 
@@ -21,6 +23,7 @@ class CombatShell(cmd.Cmd):
             'q'   : self.do_exit,
             'quit': self.do_exit,
             'm'   : self.do_move,
+            'st'  : self.do_status,
         }
 
     def preloop(self):
@@ -28,7 +31,7 @@ class CombatShell(cmd.Cmd):
         Preloop
         :return:
         """
-        player.load('result.json')
+        # player.load('result.json')
         print("The pre-loop setup entered successfully.")
 
     def postloop(self):
@@ -36,7 +39,7 @@ class CombatShell(cmd.Cmd):
         Postloop.
         :return:
         """
-        player.save()
+        # player.save()
         print("The postloop cleanup happened.")
 
     def default(self, line):
@@ -50,14 +53,6 @@ class CombatShell(cmd.Cmd):
             self.aliases[cmd](arg)
         else:
             print("*** Unknown syntax: %s" % line)
-
-    def postcmd(self, stop, line):
-        """
-        Runs status before each command is executed.
-        :param line:
-        :return:
-        """
-        print(self.disp.quickDisplay())
 
     #########################
     # Help Messages         #
@@ -130,15 +125,6 @@ class CombatShell(cmd.Cmd):
         if not alive:
             print("You just fell unconscious!")
 
-    def do_exit(self, args):
-        """
-        Exits the combat shell.
-        :param args: arguments passed, irrelevant.
-        :return: True.
-        """
-        print("Combat ends.")
-        return True
-
     def do_spell(self, args):
         """
         Looks up a spell in the database and prints it out.
@@ -162,6 +148,17 @@ class CombatShell(cmd.Cmd):
             print("Usage: move <amount in feet>")
             return
         player.move(amount)
+
+    def do_status(self, args):
+        print(self.disp.quickDisplay())
+
+    def do_exit(self, args):
+        """
+        Exits the combat shell.
+        :param args: arguments passed, irrelevant.
+        :return: True.
+        """
+        return True
 
 
 class MainShell(cmd.Cmd):
